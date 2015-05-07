@@ -1,0 +1,271 @@
+import javafx.util.Duration;
+import javafx.animation.FadeTransition;
+import javafx.animation.PathTransition;
+import javafx.animation.Timeline;
+import javafx.application.Application;
+import javafx.geometry.Pos;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.StrokeType;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+
+// round() 怎么改呢。。
+
+public class Project_ContractBridge_GamingPane extends Application {
+	
+	Rectangle p1card,p2card,p3card,p4card;
+	
+	public void start(Stage primaryStage){
+		
+		Project_ContractBridge user=new Project_ContractBridge();
+		BorderPane borderPane = new BorderPane();
+		Pane userPane= new Pane();
+		Pane player3Pane = new Pane();
+		Pane player2Pane = new Pane();
+		Pane player4Pane = new Pane();
+		GridPane table = new GridPane();
+		
+		Label team1=new Label();Label team2=new Label();
+		Button btStart = new Button("Start");
+		
+		//a button to starting game, and add to table pane
+		
+		table.setAlignment(Pos.CENTER);
+		table.add(btStart,2,2);
+		
+		//set action for button btStart
+		btStart.setOnAction(e->{
+			Project_ContractBridge.Licensing();
+			//Project_ContractBridge.round();
+			table.getChildren().remove(btStart);
+		
+		//user pane, and show cards face
+		//System.out.print(user.getUserCardsOnHand());//test user cards array
+			int i=0;
+		for(int cardNum:user.getUserCardsOnHand()){
+			
+			Rectangle userCards = new Rectangle(50+i*50, 10, 100, 130);
+			
+			Rectangle PlayerCards2 = new Rectangle(0,5+i*25, 110, 80);
+			PlayerCards2.setFill(Color.BLUE);
+			PlayerCards2.setStroke(Color.BLACK);
+			
+			Rectangle PlayerCards3 = new Rectangle(50+i*50, 10, 100, 130);
+			PlayerCards3.setFill(Color.RED);
+			PlayerCards3.setStroke(Color.BLACK);
+			
+			Rectangle PlayerCards4 = new Rectangle(0,5+i*25, 110, 80);
+			PlayerCards4.setFill(Color.GREEN);
+			PlayerCards4.setStroke(Color.BLACK);
+			
+			String fileName="file:///Users/jx/Desktop/playing_cards_images/Playing_card"+
+					Project_ContractBridge.getCard(cardNum)+".jpg";
+			Image image1=new Image(fileName);
+			
+			//System.out.println(Project_ContractBridge.getCard(cardNum));
+
+			//set action for click each card
+			userCards.setFill(new ImagePattern(image1, 0, 0, 1, 1, true));
+			
+			userCards.setOnMouseClicked(eH -> {
+				
+				Project_ContractBridge.setP1Action(cardNum);
+				Project_ContractBridge.round();
+				team1.setText("Team 1: "+user.getTeam1Score());
+				team2.setText("Team 2: "+user.getTeam2Score());
+				
+				// Result page
+				if((user.getTeam1Score()+user.getTeam2Score())==13){
+					//***********************
+					//***********************
+					Pane pane = new Pane();
+					Text result=new Text(400,400,Project_ContractBridge.theWinner());
+					result.setFont(Font.font("Courier",FontWeight.BOLD,
+							FontPosture.ITALIC,50));
+					pane.getChildren().add(result);
+					Circle circle;
+					for (int x = 0; x < 80; x++) {
+			            circle = new Circle(); 
+			            circle.setCenterX(Math.random()*Math.random()*1100); 
+			            circle.setCenterY(Math.random()*Math.random()*1100); 
+			            circle.setRadius(Math.random()*100); 
+			            circle.setStrokeType(StrokeType.OUTSIDE);
+			            circle.setStroke(Color.web("ABA"));
+			            circle.setStrokeWidth(4);
+			            circle.setFill(Color.web("BBB"));
+			            pane.getChildren().add(circle);
+					
+			// Apply a fade transition to ellipse
+			            FadeTransition ft = new FadeTransition(Duration.millis(2000), circle); 
+			            ft.setFromValue(0.1);
+			            ft.setToValue(1.0);
+			            ft.setCycleCount(Timeline.INDEFINITE);
+			            ft.setAutoReverse(true);
+			            ft.play();
+						}
+						Scene scene = new Scene(pane, 800, 800);
+						primaryStage.setScene(scene); 
+						primaryStage.show();
+	
+					//System.out.println(Project_ContractBridge.theWinner());
+					//******************
+					//******************
+				}
+				//getPxCard() has some problem
+				//show the selected card at table.
+				//table.setAlignment(Pos.BOTTOM_CENTER);
+				
+				
+				p1card=userCards;
+				p2card=PlayerCards2;
+				p3card=PlayerCards3;
+				p4card=PlayerCards4;
+				
+				
+				//*****************************
+				//***********
+				//moving action
+				PathTransition p1CardMoving = new PathTransition(
+					     Duration.millis(600),
+					       new Line(p1card.getX()+20,200, p1card.getX()+50, p1card.getY()),
+					       p1card);
+				p1CardMoving.play();
+				PathTransition p2CardMoving = new PathTransition(
+					     Duration.millis(600),
+					       new Line(p2card.getX()+200,p2card.getY()+80, p2card.getX()+30, p2card.getY()+70),
+					       p2card);
+				//p2CardMoving.setDelay(Duration.seconds(1));
+				p2CardMoving.play();
+				PathTransition p3CardMoving = new PathTransition(
+					     Duration.millis(600),
+					       new Line(p3card.getX()+100,0, p3card.getX()+30, p3card.getY()+100),
+					       p3card);
+				//p3CardMoving.setDelay(Duration.seconds(2));
+				p3CardMoving.play();
+				PathTransition p4CardMoving = new PathTransition(
+					     Duration.millis(600),
+					       new Line(p4card.getX()-200,p4card.getY()+80, p4card.getX()+50, p4card.getY()+70),
+					       p4card);
+				//p4CardMoving.setDelay(Duration.seconds(3));
+				p4CardMoving.play();
+				//***********
+				
+				table.add(p1card,1,2);
+				table.add(p2card,2,1);
+				PlayerCards2.setWidth(100);PlayerCards2.setHeight(130);
+				PlayerCards2.setFill(new ImagePattern(new Image("file:///Users/jx/Desktop/playing_cards_images/Playing_card"+user.getP2Card()+".jpg"), 0, 0, 1, 1, true));
+				table.add(p3card,1,0);
+				PlayerCards3.setFill(new ImagePattern(new Image("file:///Users/jx/Desktop/playing_cards_images/Playing_card"+user.getP3Card()+".jpg"), 0, 0, 1, 1, true));
+				table.add(p4card,0,1);
+				PlayerCards4.setWidth(100);PlayerCards4.setHeight(130);
+				PlayerCards4.setFill(new ImagePattern(new Image("file:///Users/jx/Desktop/playing_cards_images/Playing_card"+user.getP4Card()+".jpg"), 0, 0, 1, 1, true));
+				
+				Project_ContractBridge.afterOneRound();
+				
+				if(user.getBanker()=="P2"){
+					//Project_ContractBridge.afterOneRound();
+					/*p2card=PlayerCards2;
+					p3card=PlayerCards3;
+					p4card=PlayerCards4;
+					*/
+					//table.add(p2card,2,1);
+					p2card.setWidth(100);PlayerCards2.setHeight(130);
+					p2card.setFill(new ImagePattern(new Image("file:///Users/jx/Desktop/playing_cards_images/Playing_card"+user.getP2Card()+".jpg"), 0, 0, 1, 1, true));
+					
+					//table.add(p3card,1,0);
+					p3card.setFill(new ImagePattern(new Image("file:///Users/jx/Desktop/playing_cards_images/Playing_card"+user.getP3Card()+".jpg"), 0, 0, 1, 1, true));
+					//table.add(p4card,0,1);
+					p4card.setWidth(100);PlayerCards4.setHeight(130);
+					p4card.setFill(new ImagePattern(new Image("file:///Users/jx/Desktop/playing_cards_images/Playing_card"+user.getP4Card()+".jpg"), 0, 0, 1, 1, true));
+				
+					p2CardMoving.play();
+					p3CardMoving.play();
+					p4CardMoving.play();
+			}else if(user.getBanker()=="P3"){
+				//Project_ContractBridge.afterOneRound();
+					/*
+					p3card=PlayerCards3;
+					p4card=PlayerCards4;
+					*/
+					//table.add(p3card,1,0);
+					p3card.setFill(new ImagePattern(new Image("file:///Users/jx/Desktop/playing_cards_images/Playing_card"+user.getP3Card()+".jpg"), 0, 0, 1, 1, true));
+
+					//table.add(p4card,0,1);
+					p4card.setWidth(100);PlayerCards4.setHeight(130);
+					p4card.setFill(new ImagePattern(new Image("file:///Users/jx/Desktop/playing_cards_images/Playing_card"+user.getP4Card()+".jpg"), 0, 0, 1, 1, true));
+				
+					p3CardMoving.play();
+					p4CardMoving.play();
+			}else if(user.getBanker()=="P4"){
+				//Project_ContractBridge.afterOneRound();
+			
+					//p4card=PlayerCards4;
+					//table.add(p4card,0,1);
+					p4card.setWidth(100);PlayerCards4.setHeight(130);
+					p4card.setFill(new ImagePattern(new Image("file:///Users/jx/Desktop/playing_cards_images/Playing_card"+user.getP4Card()+".jpg"), 0, 0, 1, 1, true));
+				
+					p4CardMoving.play();
+			}
+				//***********
+				
+				System.out.print(user.getP2Card()+" ");
+				System.out.print(user.getP3Card()+" ");
+				System.out.println(user.getP4Card());
+				
+				
+				//Project_ContractBridge.afterOneRound();
+				System.out.println(user.getBanker());
+				
+			});
+			//ending the action
+
+			userPane.getChildren().add(userCards);
+			player2Pane.getChildren().add(PlayerCards2);
+			player3Pane.getChildren().add(PlayerCards3);
+			player4Pane.getChildren().add(PlayerCards4);
+	
+			i++;
+		}
+		});
+
+		borderPane.setBottom(userPane);
+		userPane.setStyle("-fx-background-color: ACA;-fx-border-color:RED;-fx-borderWidth:5");
+		borderPane.setRight(player2Pane);
+		player2Pane.setStyle("-fx-background-color: ACA;-fx-border-color:RED;-fx-borderWidth:5");
+		borderPane.setTop(player3Pane);player3Pane.setRotate(180);
+		player3Pane.setStyle("-fx-background-color: ACA;-fx-border-color:RED;-fx-borderWidth:5");
+		borderPane.setLeft(player4Pane);
+		player4Pane.setStyle("-fx-background-color: ACA;-fx-border-color:RED;-fx-borderWidth:5");
+		
+		borderPane.setCenter(table);
+		table.setStyle("-fx-background-color: ACA;");
+		//Score Board
+		table.add(team1,0,0);
+		table.add(team2,0,3);
+		
+		Scene scene = new Scene(borderPane,800,800);
+		primaryStage.setTitle("Contract Bridge");
+		primaryStage.setScene(scene);
+		primaryStage.show();
+}
+
+		public static void main(String[] args){
+				launch(args);
+	}
+			
+			
+}
