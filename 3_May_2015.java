@@ -1,43 +1,45 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Project_ContractBridge {
-	
+public class Project_ContractBridge extends Project_ContractBridge_GamingPane {
 	private static int suit,rank,team1Score=0,team2Score=0,round=1;
 	private static String suitType,rankType;
+	private static String banker="P1";
 	//4 arrays for 4 players
-	private static ArrayList<Integer> player1=new ArrayList<>();
+	static ArrayList<Integer> player1=new ArrayList<>();
 	private static ArrayList<Integer> player2=new ArrayList<>();
 	private static ArrayList<Integer> player3=new ArrayList<>();
 	private static ArrayList<Integer> player4=new ArrayList<>();
 
 	private static int[][] cards= new int[4][13];
 	
+	private static int P1Card,P2Card,P3Card,P4Card;
+	
 	//actions
 	public static int bankerChoise,the2ndChoise,the3rdChoise,the4thChoise;
 
 	public static void main(String[] args) {
 		//set the value into cards[][]
-		for(suit=0; suit<4;suit++){
-			for(rank=0; rank<13;rank++){
-				cards[suit][rank]=rank+1;
-			}
-		}
+		
 		//Licensing. randomly give 13 cards to every player
 		Licensing();
 		
 		while(player1.size()>0){
 			showCurentCards();
 			round();
-			round++;
 		}
 		System.out.println("-----Game End-----");
 		System.out.print("The winner is "+theWinner());
 	}
 	
-	//Licensing. randomly give 13 cards to every player
+	static //Licensing. randomly give 13 cards to every player
 	//I have no idea how to make this short
-	public static void Licensing(){
+	void Licensing(){
+		for(suit=0; suit<4;suit++){
+			for(rank=0; rank<13;rank++){
+				cards[suit][rank]=rank+1;
+			}
+		}
 		for(suit=0;suit<4;suit++){
 			for(rank=0;rank<13;rank++){
 				double random = Math.random();
@@ -95,7 +97,8 @@ public class Project_ContractBridge {
 		return playersCard;
 	}
 	
-	public static String getCard(int num){
+	//get card from int to String
+	static String getCard(int num){
 		suit=getSuit(num);
 		// give the suitType a String value
 		//1 is club;  2 is diamond; 3 is heart; 4 is spade
@@ -113,11 +116,11 @@ public class Project_ContractBridge {
 		}else if(rank==13){rankType="K";
 		}else{rankType=rank+"";}
 
-		String theCard=suitType+"_"+rankType;
+		String theCard="_"+suitType+"_"+rankType;
 		return theCard;
 	}
 	
-	public static int getSuit(int num){
+	static int getSuit(int num){
 		return suit=num/100;	
 	}
 	
@@ -125,109 +128,110 @@ public class Project_ContractBridge {
 		rank=num%100;
 		return rank;
 	}
-	
+	//-------------------------------------------------------------
 	//playing method of this Contract Bridge Game
-	public static void round(){
-		Scanner input=new Scanner(System.in);
+	public static void round(){		
+		int p2,p3,p4;
+		//showCurentCards();
+		System.out.println("Round :" +round);
+		//Player 1 is banker, p1 play first. then p2 p3 p4
+		if(banker=="P1"){
+			//setP1Action();
+			
+			p2=AIchoise(player2,P1Card);setP2Card(p2);
+			p3=AIchoise(player3,P1Card);setP3Card(p3);
+			p4=AIchoise(player4,P1Card);setP4Card(p4);
+			
+			P2Card=player2.get(p2);
+			P3Card=player3.get(p3);
+			P4Card=player4.get(p4);
+			
+			System.out.println("Player 1 Card: "+getCard(P1Card));
+			System.out.println("Player 2 Card: "+getCard(P2Card));
+			System.out.println("Player 3 Card: "+getCard(P3Card));
+			System.out.println("Player 4 Card: "+getCard(P4Card));
+			
+			scoring(P1Card,P2Card,P3Card,P4Card);
+			removeCards(P1Card,P2Card,P3Card,P4Card);
+			
+		}else if(banker=="P2"){
+			//Player 2 is banker, p2 play first. then p3 p4 p1
+			/*p2=0;
+			p3=AIchoise(player3,P2Card);
+			p4=AIchoise(player4,P2Card);
+			P2Card=player2.get(p2);
+			P3Card=player3.get(p3);
+			P4Card=player4.get(p4);
+			System.out.println("Player 2 Card: "+getCard(P2Card));
+			System.out.println("Player 3 Card: "+getCard(P3Card));
+			System.out.println("Player 4 Card: "+getCard(P4Card));
+			*/
+			//setP1Action();
+			
+			System.out.println("Player 1 Card: "+getCard(P1Card));
+			
+			scoring(P1Card,P2Card,P3Card,P4Card);
+			removeCards(P1Card,-1,-1,-1);
+			
+		}else if(banker=="P3"){
+			//Player 3 is banker, p3 play first. then p4 p1 p2
+			/*p3=0;
+			p4=AIchoise(player4,P3Card);
+			P3Card=player3.get(p3);
+			P4Card=player4.get(p4);
+			System.out.println("Player 3 Card: "+getCard(P3Card));
+			System.out.println("Player 4 Card: "+getCard(P4Card));
+			*/
+			//setP1Action();
+			
+			System.out.println("Player 1 Card: "+getCard(P1Card));
+			
+			p2=AIchoise(player2,P3Card);
+			P2Card=player2.get(p2);
+			System.out.println("Player 2 Card: "+getCard(P2Card));
+			
+			scoring(P1Card,P2Card,P3Card,P4Card);
+			removeCards(P1Card,P2Card,-1,-1);
+			
+		}else if(banker=="P4"){
+			//Player 4 is banker, p4 play first. then p1 p2 p3
+			/*p4=0;setP4Card(p4);
+			P4Card=player4.get(p4);
+			System.out.println("Player 4 Card: "+getCard(P4Card));
+			*/
+			
+			p2=AIchoise(player2,P4Card);setP2Card(p2);
+			p3=AIchoise(player3,P4Card);setP3Card(p3);
+			
+			
+			P2Card=player2.get(p2);
+			P3Card=player3.get(p3);
+			
+			//setP1Action();
+			
+			System.out.println("Player 1 Card: "+getCard(P1Card));
+			System.out.println("Player 2 Card: "+getCard(P2Card));
+			System.out.println("Player 3 Card: "+getCard(P3Card));
+			
+			scoring(P1Card,P2Card,P3Card,P4Card);
+			removeCards(P1Card,P2Card,P3Card,-1);
+			
+		}
 		
-		//each round change the banker
-		if(round%4==1){
-			System.out.println("------------ Which card would you like to play?");
-			bankerChoise=input.nextInt()-1;
-			the2ndChoise=AIchoise(player2,bankerChoise,round);
-			the3rdChoise=AIchoise(player3,bankerChoise,round);
-			the4thChoise=AIchoise(player4,bankerChoise,round);
-			System.out.println("Player 1 Card: "+getCard(player1.get(bankerChoise)));
-			System.out.println("Player 2 Card: "+getCard(player2.get(the2ndChoise)));
-			System.out.println("Player 3 Card: "+getCard(player3.get(the3rdChoise)));
-			System.out.println("Player 4 Card: "+getCard(player4.get(the4thChoise)));
-			scoring(player1.get(bankerChoise),player2.get(the2ndChoise),
-					player3.get(the3rdChoise),player4.get(the4thChoise),round);
-			removeCards(bankerChoise,the2ndChoise,the3rdChoise,the4thChoise);
-		}else if(round%4==2){
-			bankerChoise=AIchoise();
-			the2ndChoise=AIchoise(player3,bankerChoise,round);
-			the3rdChoise=AIchoise(player4,bankerChoise,round);
-			System.out.println("Player 2 Card: "+getCard(player2.get(bankerChoise)));
-			System.out.println("Player 3 Card: "+getCard(player3.get(the2ndChoise)));
-			System.out.println("Player 4 Card: "+getCard(player4.get(the3rdChoise)));
-			System.out.println("------------ Which card would you like to play?");
-			the4thChoise=input.nextInt()-1;
-			System.out.println("Player 1 Card: "+getCard(player1.get(the4thChoise)));
-			scoring(player1.get(the4thChoise),player2.get(bankerChoise),
-					player3.get(the2ndChoise),player4.get(the3rdChoise),round);
-			removeCards(the4thChoise,bankerChoise,the2ndChoise,the3rdChoise);
-		}else if(round%4==3){
-			bankerChoise=AIchoise();
-			the2ndChoise=AIchoise(player4,bankerChoise,round);
-			System.out.println("Player 3 Card: "+getCard(player3.get(bankerChoise)));
-			System.out.println("Player 4 Card: "+getCard(player4.get(the2ndChoise)));
-			System.out.println("------------ Which card would you like to play?");
-			the3rdChoise=input.nextInt()-1;
-			System.out.println("Player 1 Card: "+getCard(player1.get(the3rdChoise)));
-			the4thChoise=AIchoise(player2,bankerChoise,round);
-			System.out.println("Player 2 Card: "+getCard(player2.get(the4thChoise)));
-			scoring(player1.get(the3rdChoise),player2.get(the4thChoise),
-					player3.get(bankerChoise),player4.get(the2ndChoise),round);
-			removeCards(the3rdChoise,the4thChoise,bankerChoise,the2ndChoise);
-		}else if(round%4==0){
-			bankerChoise=AIchoise();
-			System.out.println("Player 4 Card: "+getCard(player4.get(bankerChoise)));
-			System.out.println("------------ Which card would you like to play?");
-			the2ndChoise=input.nextInt()-1;
-			System.out.println("Player 1 Card: "+getCard(player1.get(the2ndChoise)));
-			the3rdChoise=AIchoise(player2,bankerChoise,round);
-			System.out.println("Player 2 Card: "+getCard(player2.get(the3rdChoise)));
-			the4thChoise=AIchoise(player4,bankerChoise,round);
-			System.out.println("Player 3 Card: "+getCard(player3.get(the4thChoise)));
-			scoring(player1.get(the2ndChoise),player2.get(the3rdChoise),
-					player3.get(the4thChoise),player4.get(bankerChoise),round);
-			removeCards(the2ndChoise,the3rdChoise,the4thChoise,bankerChoise);
+		System.out.println(player1);
+		System.out.println(player2);
+		System.out.println(player3);
+		System.out.println(player4);
+		//removeCards(P1Card,P2Card,P3Card,P4Card);
+		round++;
 		}
-	}
-	
-	//setup AI's action as sencond-hand
-	public static int AIchoise(ArrayList<Integer> AIcardsInHand,int bankerAction,int round){
-		int choise=-1,num=0;
-		int bankerSuit;
-		if(round%4==1){
-			bankerSuit=getSuit(player1.get(bankerAction));
-		}else if(round%4==2){
-			bankerSuit=getSuit(player2.get(bankerAction));
-		}else if(round%4==3){
-			bankerSuit=getSuit(player3.get(bankerAction));
-		}else{
-			bankerSuit=getSuit(player4.get(bankerAction));
-		}
-		for(int card:AIcardsInHand){
-			if(getSuit(card)==bankerSuit){
-				if(choise==-1){
-					choise=num;
-				}else{
-					if(getRank(card)>getRank(AIcardsInHand.get(choise))){
-						choise=num;
-					}
-				}
-			}
-			num++;
-		}
-		if(choise==-1)
-			return 0;
-		else
-			return choise;
-	}
-	
-	//AI action as first hand
-	public static int AIchoise(){
-		return 0;
-	}
 	
 	//remove used cards
 	public static void removeCards(int p1Card,int p2Card,int p3Card,int p4Card){
-		player1.remove(p1Card);
-		player2.remove(p2Card);
-		player3.remove(p3Card);
-		player4.remove(p4Card);
+		if(p1Card!=-1){player1.remove(player1.indexOf(p1Card));}
+		if(p2Card!=-1){player2.remove(player2.indexOf(p2Card));}
+		if(p3Card!=-1){player3.remove(player3.indexOf(p3Card));}
+		if(p4Card!=-1){player4.remove(player4.indexOf(p4Card));}
 	}
 	
 	//display current cards every player has.
@@ -254,19 +258,19 @@ public class Project_ContractBridge {
 		System.out.println("PLAYER 4 Hand");System.out.println();
 		System.out.println(showCards(player4));
 		System.out.println();
-	}
+	} 
 	
 	//computing points
-	public static void scoring(int p1,int p2,int p3,int p4,int round){
+	public static void scoring(int p1,int p2,int p3,int p4){
 		int bankerSuit = 0,highestTeam1Rank=0,highestTeam2Rank=0,p1Rank,p2Rank,p3Rank,p4Rank;
 		
 		if(getRank(p1)==1){p1Rank=14;}else{p1Rank=getRank(p1);}
 		if(getRank(p2)==1){p2Rank=14;}else{p2Rank=getRank(p2);}
 		if(getRank(p3)==1){p3Rank=14;}else{p3Rank=getRank(p3);}
 		if(getRank(p4)==1){p4Rank=14;}else{p4Rank=getRank(p4);}
-		
+	
 		//player 1 as banker
-		if(round%4==1){
+		if(banker=="P1"){
 			bankerSuit=getSuit(p1);
 			//find the highest rank in Team 1
 			if(bankerSuit==getSuit(p3)){
@@ -287,7 +291,7 @@ public class Project_ContractBridge {
 				team1Score++;
 			}else{team2Score++;}
 			
-		}else if(round%4==2){  //player 2 as banker
+		}else if(banker=="P2"){  //player 2 as banker
 			bankerSuit=getSuit(p2);
 			//find the highest rank in Team 2
 			if(bankerSuit==getSuit(p4)){
@@ -307,7 +311,7 @@ public class Project_ContractBridge {
 			if(highestTeam1Rank>highestTeam2Rank){
 				team1Score++;
 			}else{team2Score++;}
-		}else if(round%4==3){  //player 3 as banker
+		}else if(banker=="P3"){  //player 3 as banker
 			bankerSuit=getSuit(p3);
 			//find the highest rank in Team 1
 			if(bankerSuit==getSuit(p1)){
@@ -328,7 +332,7 @@ public class Project_ContractBridge {
 				team1Score++;
 			}else{team2Score++;}
 			
-		}else if(round%4==0){  ////player 4 as banker
+		}else if(banker=="P4"){  ////player 4 as banker
 			bankerSuit=getSuit(p4);
 			//find the highest rank in Team 2
 			if(bankerSuit==getSuit(p2)){
@@ -349,12 +353,14 @@ public class Project_ContractBridge {
 				team1Score++;
 			}else{team2Score++;}
 		}
-		System.out.print("This is the highest card on the table: ");
+		System.out.print("the highest card for this round is: ");
 		int theHighestCard=Math.max(highestTeam1Rank,highestTeam2Rank);
-		if(theHighestCard==p1Rank){theHighestCard=p1;
-		}else if(theHighestCard==p2Rank){theHighestCard=p2;
-		}else if(theHighestCard==p3Rank){theHighestCard=p3;
-		}else if(theHighestCard==p4Rank){theHighestCard=p4;}
+		
+		//set the banker for next round
+		if(theHighestCard==p1Rank){theHighestCard=p1;banker="P1";
+		}else if(theHighestCard==p2Rank){theHighestCard=p2;banker="P2";
+		}else if(theHighestCard==p3Rank){theHighestCard=p3;banker="P3";
+		}else if(theHighestCard==p4Rank){theHighestCard=p4;banker="P4";}
 		
 		System.out.println(getCard(theHighestCard));
 		System.out.println();
@@ -363,10 +369,102 @@ public class Project_ContractBridge {
 		System.out.println("Team 2  Player 2 and Player 4 Points: "+ team2Score);
 	}
 	
+	public static void afterOneRound(){
+		int p2,p3,p4;
+		// just try...this way
+		if(player1.size()>1||player2.size()>1||player3.size()>1||player4.size()>1){if(banker=="P2"){
+			p2=0;
+			p3=AIchoise(player3,P2Card);
+			p4=AIchoise(player4,P2Card);
+		
+			P2Card=player2.get(p2);
+			P3Card=player3.get(p3);
+			P4Card=player4.get(p4);
+		
+			System.out.println("Player 2 Card: "+getCard(P2Card));
+			System.out.println("Player 3 Card: "+getCard(P3Card));
+			System.out.println("Player 4 Card: "+getCard(P4Card));
+			removeCards(-1,P2Card,P3Card,P4Card);
+		}else if(banker=="P3"){
+			//Player 3 is banker, p3 play first. then p4 p1 p2
+			p3=0;
+			p4=AIchoise(player4,P3Card);
+			
+			P3Card=player3.get(p3);
+			P4Card=player4.get(p4);
+			
+			System.out.println("Player 3 Card: "+getCard(P3Card));
+			System.out.println("Player 4 Card: "+getCard(P4Card));
+			removeCards(-1,-1,P3Card,P4Card);
+		}else if(banker=="P4"){
+			//Player 4 is banker, p4 play first. then p1 p2 p3
+			p4=0;setP4Card(p4);		
+			P4Card=player4.get(p4);
+			System.out.println("Player 4 Card: "+getCard(P4Card));
+			removeCards(-1,-1,-1,P4Card);
+		}
+		}
+	}
+	
+	//return the winner team
 	public static String theWinner(){
 		if(team1Score>team2Score)
-			return "Team 1!\nCongratulations!\nPlayer 1, Player 3";
+			return "YOU WIN!";
 		else
-			return "Team 2!\nCongratulations!\nPlayer 2, Player 4";
+			return "YOU LOSE! LOL";
 	}
+	
+	ArrayList<Integer> getUserCardsOnHand(){
+		return player1;
+	}
+	
+	//-----------------------------------------------------------
+	//get & set actions
+	
+	public static void setP1Action(int num){
+		//Scanner input = new Scanner(System.in);
+		//System.out.println("------------ Which card would you like to play?");
+		int p1InputCard=num;
+		P1Card=p1InputCard;
+	}
+	
+	//setup AI's action as second-hand
+	public static int AIchoise(ArrayList<Integer> AIcardsInHand,int bankerCard){
+			int choise=-1,num=0;
+			int bankerSuit=getSuit(bankerCard);
+			for(int card:AIcardsInHand){
+				if(getSuit(card)==bankerSuit){
+					if(choise==-1){
+						choise=num;
+					}else{
+						if(getRank(card)>getRank(AIcardsInHand.get(choise))){
+							choise=num;
+						}
+					}
+				}
+				num++;
+			}
+			//if don't have same-suit card, selete first card in hand
+			if(choise==-1)
+				return 0;
+			else
+				return choise;
+		}
+	
+	String getBanker(){return banker;}
+	
+	//get the card for this round
+	
+	public static void setP2Card(int num){P2Card=num;}
+	public static void setP3Card(int num){P3Card=num;}
+	public static void setP4Card(int num){P4Card=num;}
+	
+	public String getP1Card(){return getCard(P1Card);}
+	public String getP2Card(){return getCard(P2Card);}
+	public String getP3Card(){return getCard(P3Card);}
+	public String getP4Card(){return getCard(P4Card);}
+	public int getTeam1Score(){return team1Score;}
+	public int getTeam2Score(){return team2Score;}
+	
+	int getRound(){return round;}
 }
